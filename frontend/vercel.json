@@ -1,7 +1,7 @@
 {
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://BACKEND_URL/api/:path*" },
-    { "source": "/uploads/:path*", "destination": "https://BACKEND_URL/uploads/:path*" },
+    { "source": "/api/:path*", "destination": "https://everything-stability-wearing-category.trycloudflare.com/api/:path*" },
+    { "source": "/uploads/:path*", "destination": "https://everything-stability-wearing-category.trycloudflare.com/uploads/:path*" },
     { "source": "/((?!assets/|scenes/|tour/|team/)(?!.*\.[a-zA-Z0-9]+$).*)", "destination": "/index.html" }
   ]
 }

@@ -12,3 +12,4 @@ backend/src/Keyzo.Api/uploads/
 .vs/
 .vscode/
 Thumbs.db
+tunnel.log
