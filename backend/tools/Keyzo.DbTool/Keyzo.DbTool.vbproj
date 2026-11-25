@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <StartupObject>Keyzo.DbTool.Program</StartupObject>
+    <UserSecretsId>a9cd6df6-c4f8-4feb-ac49-9386e8eaaafc</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="11.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="11.0.0" />
+    <PackageReference Include="MySqlConnector" Version="2.6.2" />
+  </ItemGroup>
+
+</Project>

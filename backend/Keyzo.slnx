@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Keyzo.Api/Keyzo.Api.vbproj" />
+    <Project Path="src/Keyzo.Application/Keyzo.Application.vbproj" />
+    <Project Path="src/Keyzo.Domain/Keyzo.Domain.vbproj" />
+    <Project Path="src/Keyzo.Infrastructure/Keyzo.Infrastructure.vbproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Keyzo.Tests/Keyzo.Tests.vbproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/Keyzo.DbTool/Keyzo.DbTool.vbproj" />
+  </Folder>
+</Solution>

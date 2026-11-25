@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Keyzo.Application\Keyzo.Application.vbproj" />
+    <ProjectReference Include="..\Keyzo.Infrastructure\Keyzo.Infrastructure.vbproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.*" />
+    <PackageReference Include="Serilog.AspNetCore" Version="11.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.3.1" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <UserSecretsId>a9cd6df6-c4f8-4feb-ac49-9386e8eaaafc</UserSecretsId>
+  </PropertyGroup>
+
+</Project>

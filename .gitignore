@@ -1,0 +1,14 @@
+# build output
+bin/
+obj/
+dist/
+node_modules/
+# logs
+*.log
+*.err
+# runtime uploads
+backend/src/Keyzo.Api/uploads/
+# editor / OS
+.vs/
+.vscode/
+Thumbs.db
