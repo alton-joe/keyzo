@@ -464,7 +464,7 @@ Namespace Services
         End Sub
 
         Public Function Render(d As ReceiptData) As Byte() Implements IReceiptPdf.Render
-            Const brand As String = "#4F46E5"
+            Const brand As String = "#111827"
             Dim document = QuestPDF.Fluent.Document.Create(
                 Sub(doc)
                     doc.Page(
@@ -498,7 +498,7 @@ Namespace Services
                                     AddRow(col, "Method", d.Method.Replace("_"c, " "c).ToUpperInvariant() &
                                            If(String.IsNullOrWhiteSpace(d.Reference), "", $"  |  Ref: {d.Reference}"))
 
-                                    col.Item().PaddingTop(10).Background("#eef2ff").Padding(12).Row(
+                                    col.Item().PaddingTop(10).BorderTop(1).BorderBottom(1).BorderColor("#d1d5db").PaddingVertical(10).Row(
                                         Sub(r)
                                             r.RelativeItem().Text("Amount received").Bold()
                                             r.RelativeItem().AlignRight().Text(Money(d.Amount)).Bold().FontSize(16).FontColor(brand)
@@ -517,15 +517,10 @@ Namespace Services
             Return document.GeneratePdf()
         End Function
 
-        Private Const LogoSvg As String = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='#818CF8'/><stop offset='1' stop-color='#8B5CF6'/></linearGradient></defs><rect width='64' height='64' rx='16' fill='url(#g)'/><circle cx='24' cy='32' r='9' fill='none' stroke='#ffffff' stroke-width='5'/><path d='M33 32h20M46 32v8M53 32v6' stroke='#FBBF24' stroke-width='5' stroke-linecap='round' fill='none'/></svg>"
-
         Public Function RenderInvoice(d As InvoicePdfData) As Byte() Implements IReceiptPdf.RenderInvoice
-            Const brand As String = "#4F46E5"
-            Const dark As String = "#1E1B4B"
-            Const soft As String = "#F5F3FF"
+            Const ink As String = "#111827"
             Const muted As String = "#6b7280"
-            Const rule As String = "#e5e7eb"
-            Const green As String = "#15803d"
+            Const rule As String = "#d1d5db"
             Dim total = d.Rent + d.LateFee
             Dim balance = Math.Max(0D, total - d.AmountPaid)
             Dim document = QuestPDF.Fluent.Document.Create(
@@ -533,90 +528,90 @@ Namespace Services
                     doc.Page(
                         Sub(page)
                             page.Size(PageSizes.A4)
-                            page.Margin(0)
-                            page.DefaultTextStyle(Function(t) t.FontSize(10).FontColor("#1f2937"))
+                            page.Margin(40)
+                            page.DefaultTextStyle(Function(t) t.FontSize(10).FontColor(ink))
 
                             page.Header().Column(
                                 Sub(col)
-                                    col.Item().Background(dark).PaddingHorizontal(32).PaddingVertical(26).Row(
+                                    col.Item().Row(
                                         Sub(row)
-                                            row.ConstantItem(46).Height(46).Svg(LogoSvg)
-                                            row.RelativeItem().PaddingLeft(12).AlignMiddle().Column(
+                                            row.RelativeItem().Column(
                                                 Sub(c)
-                                                    c.Item().Text("Keyzo").FontSize(24).Bold().FontColor("#FFFFFF")
-                                                    c.Item().Text("Smart property management").FontSize(8).FontColor("#A5B4FC")
+                                                    c.Item().Text("Keyzo").FontSize(20).Bold()
+                                                    c.Item().Text("Rental management").FontSize(9).FontColor(muted)
                                                 End Sub)
-                                            row.ConstantItem(210).AlignRight().Column(
+                                            row.ConstantItem(200).AlignRight().Column(
                                                 Sub(c)
-                                                    c.Item().AlignRight().Text("INVOICE").FontSize(28).Bold().FontColor("#FFFFFF")
-                                                    c.Item().AlignRight().Text(d.InvoiceNumber).FontSize(11).FontColor("#C7D2FE")
+                                                    c.Item().AlignRight().Text("INVOICE").FontSize(20).Bold()
+                                                    c.Item().AlignRight().Text(d.InvoiceNumber).FontColor(muted)
                                                 End Sub)
                                         End Sub)
-                                    col.Item().Height(4).Background("#FBBF24")
+                                    col.Item().PaddingTop(12).LineHorizontal(1).LineColor(ink)
                                 End Sub)
 
-                            page.Content().PaddingHorizontal(32).PaddingVertical(24).Column(
+                            page.Content().PaddingVertical(20).Column(
                                 Sub(col)
-                                    col.Spacing(16)
+                                    col.Spacing(22)
 
-                                    ' status + key dates
+                                    ' billed to / property / invoice details
                                     col.Item().Row(
                                         Sub(row)
-                                            row.Spacing(10)
-                                            row.RelativeItem().Background("#DCFCE7").Padding(10).Column(
+                                            row.Spacing(24)
+                                            row.RelativeItem().Column(
                                                 Sub(c)
-                                                    c.Item().Text("STATUS").FontSize(7).Bold().FontColor(green)
-                                                    c.Item().Text("PAID IN FULL").FontSize(12).Bold().FontColor(green)
+                                                    c.Spacing(2)
+                                                    c.Item().Text("Billed to").FontSize(8).FontColor(muted)
+                                                    c.Item().Text(d.Tenant).Bold()
+                                                    If Not String.IsNullOrWhiteSpace(d.TenantEmail) Then c.Item().Text(d.TenantEmail)
+                                                    If Not String.IsNullOrWhiteSpace(d.TenantPhone) Then c.Item().Text(d.TenantPhone)
                                                 End Sub)
-                                            Stat(row, "BILLING MONTH", d.Period.ToString("MMMM yyyy"))
-                                            Stat(row, "ISSUED", d.IssueDate.ToString("dd MMM yyyy"))
-                                            Stat(row, "DUE DATE", d.DueDate.ToString("dd MMM yyyy"))
-                                        End Sub)
-
-                                    ' parties
-                                    col.Item().Row(
-                                        Sub(row)
-                                            row.Spacing(12)
-                                            row.RelativeItem().Border(1).BorderColor(rule).Padding(12).Column(
+                                            row.RelativeItem().Column(
                                                 Sub(c)
-                                                    c.Spacing(3)
-                                                    c.Item().Text("BILLED TO").FontSize(7).Bold().FontColor(brand)
-                                                    c.Item().Text(d.Tenant).FontSize(13).Bold()
-                                                    If Not String.IsNullOrWhiteSpace(d.TenantEmail) Then c.Item().Text(d.TenantEmail).FontColor(muted)
-                                                    If Not String.IsNullOrWhiteSpace(d.TenantPhone) Then c.Item().Text(d.TenantPhone).FontColor(muted)
+                                                    c.Spacing(2)
+                                                    c.Item().Text("Property").FontSize(8).FontColor(muted)
+                                                    c.Item().Text($"{d.Property} - Unit {d.Unit}").Bold()
+                                                    c.Item().Text(d.Address)
+                                                    c.Item().Text($"Lease {d.LeaseStart:dd MMM yyyy} to {d.LeaseEnd:dd MMM yyyy}").FontColor(muted)
                                                 End Sub)
-                                            row.RelativeItem().Border(1).BorderColor(rule).Padding(12).Column(
+                                            row.RelativeItem().Column(
                                                 Sub(c)
-                                                    c.Spacing(3)
-                                                    c.Item().Text("PROPERTY").FontSize(7).Bold().FontColor(brand)
-                                                    c.Item().Text($"{d.Property} - Unit {d.Unit}").FontSize(13).Bold()
-                                                    c.Item().Text(d.Address).FontColor(muted)
-                                                    c.Item().Text($"Lease: {d.LeaseStart:dd MMM yyyy} to {d.LeaseEnd:dd MMM yyyy}").FontColor(muted)
+                                                    c.Spacing(2)
+                                                    Meta(c, "Billing month", d.Period.ToString("MMMM yyyy"))
+                                                    Meta(c, "Issued", d.IssueDate.ToString("dd MMM yyyy"))
+                                                    Meta(c, "Due", d.DueDate.ToString("dd MMM yyyy"))
+                                                    Meta(c, "Status", "Paid")
                                                 End Sub)
                                         End Sub)
 
                                     ' charges
-                                    col.Item().Column(
-                                        Sub(c)
-                                            c.Item().Background(soft).Padding(8).Row(
-                                                Sub(r)
-                                                    r.RelativeItem().Text("DESCRIPTION").FontSize(8).Bold().FontColor(brand)
-                                                    r.ConstantItem(110).AlignRight().Text("AMOUNT").FontSize(8).Bold().FontColor(brand)
-                                                End Sub)
-                                            ChargeRow(c, $"Monthly rent - {d.Period:MMMM yyyy}", Money(d.Rent))
-                                            If d.LateFee > 0 Then ChargeRow(c, "Late fee", Money(d.LateFee))
+                                    col.Item().Table(
+                                        Sub(t)
+                                            t.ColumnsDefinition(Sub(cd)
+                                                                    cd.RelativeColumn(5.0F)
+                                                                    cd.RelativeColumn(1.6F)
+                                                                End Sub)
+                                            t.Header(Sub(h)
+                                                         HeadCell(h, "Description", False)
+                                                         HeadCell(h, "Amount", True)
+                                                     End Sub)
+                                            BodyCell(t, $"Monthly rent - {d.Period:MMMM yyyy}", False)
+                                            BodyCell(t, Money(d.Rent), True)
+                                            If d.LateFee > 0 Then
+                                                BodyCell(t, "Late fee", False)
+                                                BodyCell(t, Money(d.LateFee), True)
+                                            End If
                                         End Sub)
 
                                     ' totals
-                                    col.Item().AlignRight().Width(240).Column(
+                                    col.Item().AlignRight().Width(230).Column(
                                         Sub(c)
                                             c.Spacing(4)
-                                            TotalRow(c, "Invoice total", Money(total), False)
-                                            TotalRow(c, "Amount paid", Money(d.AmountPaid), False)
-                                            c.Item().PaddingTop(4).Background(green).Padding(10).Row(
+                                            TotalRow(c, "Invoice total", Money(total))
+                                            TotalRow(c, "Amount paid", Money(d.AmountPaid))
+                                            c.Item().PaddingTop(4).BorderTop(1).BorderColor(ink).PaddingTop(6).Row(
                                                 Sub(r)
-                                                    r.RelativeItem().Text("Balance due").Bold().FontColor("#FFFFFF")
-                                                    r.AutoItem().Text(Money(balance)).Bold().FontSize(13).FontColor("#FFFFFF")
+                                                    r.RelativeItem().Text("Balance due").Bold()
+                                                    r.AutoItem().Text(Money(balance)).Bold().FontSize(12)
                                                 End Sub)
                                         End Sub)
 
@@ -624,22 +619,22 @@ Namespace Services
                                     col.Item().Column(
                                         Sub(c)
                                             c.Spacing(6)
-                                            c.Item().Text("Payments received").Bold().FontSize(12).FontColor(dark)
+                                            c.Item().Text("Payments received").Bold()
                                             c.Item().Table(
                                                 Sub(t)
                                                     t.ColumnsDefinition(Sub(cd)
-                                                                            cd.RelativeColumn(2.2F)
-                                                                            cd.RelativeColumn(2.2F)
-                                                                            cd.RelativeColumn(1.6F)
-                                                                            cd.RelativeColumn(2.2F)
+                                                                            cd.RelativeColumn(3.1F)
+                                                                            cd.RelativeColumn(2.4F)
+                                                                            cd.RelativeColumn(1.3F)
+                                                                            cd.RelativeColumn(2.0F)
                                                                             cd.RelativeColumn(1.8F)
                                                                         End Sub)
                                                     t.Header(Sub(h)
-                                                                 HeadCell(h, "RECEIPT", False)
-                                                                 HeadCell(h, "PAID ON", False)
-                                                                 HeadCell(h, "METHOD", False)
-                                                                 HeadCell(h, "REFERENCE", False)
-                                                                 HeadCell(h, "AMOUNT", True)
+                                                                 HeadCell(h, "Receipt", False)
+                                                                 HeadCell(h, "Paid on", False)
+                                                                 HeadCell(h, "Method", False)
+                                                                 HeadCell(h, "Reference", False)
+                                                                 HeadCell(h, "Amount", True)
                                                              End Sub)
                                                     For Each p In d.Payments
                                                         BodyCell(t, p.ReceiptNumber, False)
@@ -650,17 +645,15 @@ Namespace Services
                                                     Next
                                                 End Sub)
                                         End Sub)
-
-                                    col.Item().Text("Thank you for your payment.").FontColor(muted).Italic()
                                 End Sub)
 
-                            page.Footer().PaddingHorizontal(32).PaddingBottom(18).Column(
+                            page.Footer().Column(
                                 Sub(c)
                                     c.Item().LineHorizontal(0.5F).LineColor(rule)
                                     c.Item().PaddingTop(6).Row(
                                         Sub(r)
-                                            r.RelativeItem().Text("Keyzo - computer-generated invoice, no signature required.").FontSize(8).FontColor(muted)
-                                            r.AutoItem().Text($"{d.InvoiceNumber}").FontSize(8).FontColor(muted)
+                                            r.RelativeItem().Text("Computer-generated invoice. No signature required.").FontSize(8).FontColor(muted)
+                                            r.AutoItem().Text(d.InvoiceNumber).FontSize(8).FontColor(muted)
                                         End Sub)
                                 End Sub)
                         End Sub)
@@ -668,38 +661,30 @@ Namespace Services
             Return document.GeneratePdf()
         End Function
 
-        Private Shared Sub Stat(row As RowDescriptor, label As String, value As String)
-            row.RelativeItem().Background("#F5F3FF").Padding(10).Column(
-                Sub(c)
-                    c.Item().Text(label).FontSize(7).Bold().FontColor("#4F46E5")
-                    c.Item().Text(value).FontSize(11).Bold()
-                End Sub)
-        End Sub
-
-        Private Shared Sub ChargeRow(col As ColumnDescriptor, desc As String, amount As String)
-            col.Item().BorderBottom(0.5F).BorderColor("#e5e7eb").Padding(8).Row(
+        Private Shared Sub Meta(col As ColumnDescriptor, label As String, value As String)
+            col.Item().Row(
                 Sub(r)
-                    r.RelativeItem().Text(desc)
-                    r.ConstantItem(110).AlignRight().Text(amount)
+                    r.ConstantItem(75).Text(label).FontColor("#6b7280")
+                    r.RelativeItem().AlignRight().Text(value)
                 End Sub)
         End Sub
 
-        Private Shared Sub TotalRow(col As ColumnDescriptor, label As String, value As String, bold As Boolean)
+        Private Shared Sub TotalRow(col As ColumnDescriptor, label As String, value As String)
             col.Item().Row(
                 Sub(r)
                     r.RelativeItem().Text(label).FontColor("#6b7280")
-                    r.AutoItem().Text(value).SemiBold()
+                    r.AutoItem().Text(value)
                 End Sub)
         End Sub
 
         Private Shared Sub HeadCell(h As TableCellDescriptor, text As String, right As Boolean)
-            Dim cell = h.Cell().Background("#F5F3FF").Padding(7)
+            Dim cell = h.Cell().BorderBottom(1).BorderColor("#111827").PaddingVertical(6).PaddingHorizontal(4)
             If right Then cell = cell.AlignRight()
-            cell.Text(text).FontSize(8).Bold().FontColor("#4F46E5")
+            cell.Text(text).FontSize(9).Bold()
         End Sub
 
         Private Shared Sub BodyCell(t As TableDescriptor, text As String, right As Boolean)
-            Dim cell = t.Cell().BorderBottom(0.5F).BorderColor("#e5e7eb").Padding(7)
+            Dim cell = t.Cell().BorderBottom(0.5F).BorderColor("#d1d5db").PaddingVertical(6).PaddingHorizontal(4)
             If right Then cell = cell.AlignRight()
             cell.Text(text)
         End Sub
