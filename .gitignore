@@ -13,3 +13,4 @@ backend/src/Keyzo.Api/uploads/
 .vscode/
 Thumbs.db
 tunnel.log
+autostart.log
