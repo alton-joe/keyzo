@@ -1,7 +1,7 @@
 {
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://thehun-drinking-mother-amanda.trycloudflare.com/api/:path*" },
-    { "source": "/uploads/:path*", "destination": "https://thehun-drinking-mother-amanda.trycloudflare.com/uploads/:path*" },
+    { "source": "/api/:path*", "destination": "https://rrp-vice-oliver-pontiac.trycloudflare.com/api/:path*" },
+    { "source": "/uploads/:path*", "destination": "https://rrp-vice-oliver-pontiac.trycloudflare.com/uploads/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
