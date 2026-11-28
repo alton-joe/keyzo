@@ -1,7 +1,7 @@
 {
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://keeps-abraham-lafayette-break.trycloudflare.com/api/:path*" },
-    { "source": "/uploads/:path*", "destination": "https://keeps-abraham-lafayette-break.trycloudflare.com/uploads/:path*" },
+    { "source": "/api/:path*", "destination": "https://joseph-approaches-adipex-mission.trycloudflare.com/api/:path*" },
+    { "source": "/uploads/:path*", "destination": "https://joseph-approaches-adipex-mission.trycloudflare.com/uploads/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
